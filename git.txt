@@ -1,0 +1,284 @@
+代码协同管理工具
+
+SVN   GIT
+
+什么是git
+
+git是一个开源的分布式版本控制系统。用于高效敏捷的管理大小项目代码。
+
+git特点
+
+* git 可以管理各种文件，特别是代码项目。多使用在*nix系统中
+* 是分布式管理，不同于集中管理。这是git和svn的核心区别
+* 更好的支持分支
+* 拥有全球唯一的版本号
+* 代码安全性更加有保证
+* 开源方便，数据传输速度更快，可以无网络操作
+
+集中式和分布式
+
+集中式 ： 代码集中管理，需要上传到中央服务器。每次更新都从中央服务器下载。 （svn）
+
+分布式 ： 每个节点都保存完整的代码，没有中央服务器。节点之间相互推送下载完成代码共享。 （git）
+
+git的安装
+
+linux下
+sudo apt-get install  git
+
+windows : msysgit.github.io
+
+git的配置
+
+git配置工具 ：  git config
+
+配置级别
+1. 系统中所有用户都使用 
+   /etc/gitconfig 文件
+   
+   配置姓名
+   git  config  --system  user.email [youremail]
+
+   e.g.
+   sudo git config --system user.email lvze@tedu.cn
+
+2. 作用于当前用户
+   ~/.gitconfig 文件
+    
+    配置邮箱
+    git  config  --global  user.name [yourname]
+    
+    e.g.
+    sudo git config --global user.name Levi
+
+3.  作用于当前项目仓库 
+     .git/config
+     
+     配置编译器
+     git config core.editor  [youreditor]
+     
+     e.g.
+     git config core.editor  vim
+
+
+查看配置信息
+git config  --list
+
+git 命令
+
+* 初始化git仓库
+git  init 
+
+将需要git管理的代码写在git仓库（目录）中
+
+* 查看当前分支状态
+git  status
+
+默认在git的主分支 master上工作
+
+* 将文件或目录提交到暂存区
+git  add   file1，file2
+
+* 删除暂存区中的文件
+git rm --cached file  
+
+* 将暂存区内容保存提交
+git commit  -m  ‘some message’
+e.g. git commit -m  "add a file:README.txt"
+
+* 查看提交日志
+git log
+git log --pretty=oneline  每个之日只显示一行
+
+
+* 查看当前文件和已提交内容的差别
+git  diff   file
+e.g.
+git diff README.txt
+
+* 恢复误删的文件
+git checkout file
+
+e.g.
+git checkout README.txt
+
+文件的移动删除
+ git mv test/file.config  .
+ git rm file.config 
+
+操作后需要commit操作才真正让git和当前文件夹一致
+
+
+版本控制
+
+* 回到上一个版本
+
+git reset  --hard  HEAD^
+
+回到上一个版本就一个 ^  回到上两个版本就两个^^
+超过10 就 HEAD~10
+
+直接通过commit_id 前7位调到某个版本
+git reset  --hard  7764c27
+
+*去往较新的版本
+当退回到某个版本后，比其新的版本log就无法通过git log查看 此时使用git  reflog查看，然后通过
+git reset --hard  去往指定版本
+
+git reflog
+
+
+* 放弃工作区内容修改
+git checkout -- file
+
+e.g.
+git checkout -- README.txt
+
+
+* 创建临时保存工作区
+
+内容暂时保存不想提交 （没有commit的情况下，如果已经commit就没有意义了）
+
+git stash
+
+查看现有保存的工作区
+git  stash  list
+
+恢复到某个工作区
+git stash apply  stash@{2}
+
+恢复并删除上一个工作区
+git stash  pop
+
+删除指定的工作区
+git stash drop  stash@{0}
+
+清除工作区
+git stash clear
+
+
+分支操作
+
+什么是分支
+分支即每个人可以获取代码，在此基础上创建自己的分支单独开发，不用考虑别人对代码的使用情况。开发完成后再将自己的分支合并到主线中。
+
+好处 ： 安全，不影响其他人工作，自己控制进度
+
+查看当前分支
+git branch
+
+注意 ： 前面有*的表示当前正在工作的分支 默认为master
+
+创建新的分支
+git branch dev_Tom
+
+切换工作分支
+git checkout dev_Tom
+
+创建并切换到新的分支
+git checkout -b dev_Jame
+
+将某个分支合并到当前分支
+ git merge dev_Tom
+
+删除分支 
+-D为强制删除，没有被合并的分支不允许用-d删除
+
+git branch -d dev_Tom
+git branch -D dev_Jame
+
+查看操作流程
+git log  --graph
+
+
+标签管理
+
+什么是标签 ： 即再当前工作位置增加快照，保存工作状态。一般用于重要里程碑事件后添加标签
+
+创建标签
+
+在最新的commit上打标签
+git  tag   v1.0  
+
+选择commit_id打标签
+git  tag  v0.9  6224637
+
+查看标签
+git  tag
+
+查看标签的 commit 说明
+git show v0.9
+
+用-a指定标签名称  -m添加标签信息
+git tag -a v1.1 -m 'version 1.1 released' [commit_id]
+
+删除标签
+git tag -d v0.9
+
+恢复到指定标签版本
+git  reset  --hard  v1.0
+
+
+创建共享仓库
+1. 创建一个文件夹
+   mkdir  gitrepo
+2. 设置文件夹的用户所属
+   chown  tarena:tarena  gitrepo
+3. 进入文件夹，创建为git仓库
+   cd  gitrepo
+   git init --bare  project.git
+4. 一般项目名称都以.git结尾，设置该目录用户
+   chown -R tarena:tarena project.git
+
+添加远程仓库
+git remote add origin tarena@127.0.0.1:/home/tarena/gitrepo/project.git
+
+向远程仓库推送代码
+git push -u origin master
+* 第一次推送代码时加  -u 选项
+
+获取项目代码 
+连接远程共享仓库
+git remote add origin tarena@127.0.0.1:/home/tarena/gitrepo/project.git
+
+将项目克隆到本地
+git clone tarena@127.0.0.1:/home/tarena/gitrepo/project.git
+
+
+其他推送命令
+
+推送其他分支
+git push origin dev_Jame
+
+推送标签到远程仓库
+git push origin --tags  推送所有标签
+git push origin v1.0  推送指定标签
+
+删除远程分支
+git push  -u  origin :dev_Jame
+
+删除标签
+git push  origin --delete tag v1.0
+
+
+其他获取远程仓库代码命令
+
+获取新的分支和标签
+git fetch origin
+
+获取更新的代码
+git pull
+
+
+github
+
+08年上线的一个开源社区，使用git作为项目代码管理工具
+
+
+
+
+
+
+
+
+
